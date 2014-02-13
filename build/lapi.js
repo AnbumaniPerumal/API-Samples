@@ -476,6 +476,19 @@ var lapi = {};
    */
   lapi.stepCb = function(){};
 
+  lapi.enableAutoHide = function(in_enable){
+    lapi._embedRPC("var appSpace = Application.Core.GetAppspace();",          
+      "self.toolbar.draw({" +
+            "htmlContainer : appspace.domElement," +
+            "model : ACTIVEAPP.cmdman.getTree()," +
+            "context : null," +
+            "fill : !ACTIVEAPP._isEmbed," +
+            "drawOnBottom : ACTIVEAPP._isEmbed," +
+            "drawLabels : !ACTIVEAPP._isEmbed,".+
+            "autoHide : " + in_enable + ","+
+          "})")
+  };
+
   // Make sure that the whole scene is loaded! Only then can you  set the first object selection.
   // This happens because we want the user to have a reference object to guide them.
   $(function() {
