@@ -1168,6 +1168,12 @@ lapi.Scene.prototype = {
    * @in_cb {Function} optional callback that expects the SceneObject of the asset just added.
    */
   addAsset2D : function(in_guid, in_dataType, in_name, in_cb){
+    var scn = lapi.getActiveScene();
+    var obj = scn.getObjectByGuid(in_guid);
+    if(obj){
+      console.warn("Asset already added to scene.");
+      return;
+    }
     if(in_cb){
       lapi._cbmap[in_guid] = in_cb;
     }
