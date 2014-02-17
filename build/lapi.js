@@ -120,12 +120,15 @@ var lapi = {};
         if(retval.subchannel === 'objectAdded'){
           var scn = lapi.getActiveScene();
           var tuid = retval.data.tuid;
-          // Don't add Material or lights since we add them already.
-          if(tuid !== 'MaterialID' && tuid !== 'LightID'){
-            scn.addObject(tuid,retval.data.guid, function(obj){
-              lapi.onObjectAdded(obj);
-            });
-          }
+          scn.addObject(tuid,retval.data.guid, function(obj){
+            lapi.onObjectAdded(obj);
+            var name = obj.properties.getParameter('name').value;
+            if(lapi._cbmap[name]){
+              var callback = lapi._cbmap[name];
+              callback(obj);
+              delete lapi._cbmap[name];
+            }
+          });
         }
       } else {
         if(lapi._cbmap[retval.id]){
@@ -1157,6 +1160,21 @@ lapi.Scene.prototype = {
     lapi._loadAssets(in_assetArray);
   },
 
+  /*
+   * Load an asset dynamically into the scene. 
+   * @in_guid {String} The guid of the asset we want to load
+   * @in_dataType {Number} The datatype of the asset
+   * @in_name {String} name of the asset. Can be user-defined.
+   * @in_cb {Function} optional callback that expects the SceneObject of the asset just added.
+   */
+  addExternalAsset : function(in_guid, in_dataType, in_name,in_cb){
+    var name = in_name.split('.')[0];
+    if(in_cb){
+      lapi._cbmap[name] = in_cb;
+    }
+    lapi._loadAssets([{name : name, datatype : in_dataType, version_guid : in_guid}]);
+  },
+
   addObject : function(in_tuid,in_guid,in_cb){
     var initClass = this._classedItems[in_tuid];
     if(!initClass){
@@ -1176,8 +1194,10 @@ lapi.Scene.prototype = {
     var self = this;
     lapi._embedRPC("var mat = ACTIVEAPP.AddEngineMaterial({minortype : '"
     + in_materialType + "'});"
-    + "mat.guid;",function(in_response){
-      self.addObject('MaterialID',in_response.data,in_cb);
+    + "mat.name;",function(in_response){
+      if(in_cb){
+        lapi._cbmap[in_response.data] = in_cb;
+      }
     });
   },
 
@@ -1191,8 +1211,10 @@ lapi.Scene.prototype = {
     var self = this;
     lapi._embedRPC("var light = ACTIVEAPP.AddLight({minortype : '"
     + in_lightType + "'});"
-    + "light.guid;",function(in_response){
-      self.addObject('LightID',in_response.data,in_cb);
+    + "light.name;",function(in_response){
+      if(in_cb){
+        lapi._cbmap[in_response.data] = in_cb;
+      }
     });
   }
 

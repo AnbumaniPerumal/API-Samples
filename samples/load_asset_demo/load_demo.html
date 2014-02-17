@@ -65,7 +65,9 @@
         assetGUID = $(this).val();
         assetName = $(this).text();
       });
-      lapi.getActiveScene().addAssets([{name: assetName, datatype : ASSETS[assetGUID],version_guid: assetGUID}]);
+      lapi.getActiveScene().addExternalAsset(assetGUID,ASSETS[assetGUID],'test_' + assetName, function(obj){
+        console.log('HOWDY'); console.log(obj);
+      });
     }
 
     $( document ).ready(function() {

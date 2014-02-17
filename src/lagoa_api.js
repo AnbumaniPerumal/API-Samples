@@ -109,12 +109,15 @@
         if(retval.subchannel === 'objectAdded'){
           var scn = lapi.getActiveScene();
           var tuid = retval.data.tuid;
-          // Don't add Material or lights since we add them already.
-          if(tuid !== 'MaterialID' && tuid !== 'LightID'){
-            scn.addObject(tuid,retval.data.guid, function(obj){
-              lapi.onObjectAdded(obj);
-            });
-          }
+          scn.addObject(tuid,retval.data.guid, function(obj){
+            lapi.onObjectAdded(obj);
+            var name = obj.properties.getParameter('name').value;
+            if(lapi._cbmap[name]){
+              var callback = lapi._cbmap[name];
+              callback(obj);
+              delete lapi._cbmap[name];
+            }
+          });
         }
       } else {
         if(lapi._cbmap[retval.id]){
