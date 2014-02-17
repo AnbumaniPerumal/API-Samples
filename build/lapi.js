@@ -126,6 +126,15 @@ var lapi = {};
               var callback = lapi._cbmap[guid];
               callback(obj);
               delete lapi._cbmap[guid];
+            } else {
+              var assetName = obj.properties.getParameter('name').value;
+              if(lapi._cbmap[assetName]){
+                var name = assetName.split(':')[0];
+                obj.properties.getParameter('name').value = name;
+                var callback = lapi._cbmap[assetName];
+                callback(obj);
+                delete lapi._cbmap[assetName];
+              }
             }
             lapi.onObjectAdded(obj);
           });
@@ -1160,6 +1169,24 @@ lapi.Scene.prototype = {
     lapi._loadAssets(in_assetArray);
   },
 
+
+  /*
+   * Load a scene asset dynamically into the scene. Coule be mesh, materials or scenes!
+   * @in_guid {String} The guid of the asset we want to load
+   * @in_dataType {Number} The datatype of the asset
+   * @in_name {String} name of the asset. Can be user-defined.
+   * @in_cb {Function} optional callback that expects the SceneObject of the asset just added.
+   */
+  addSceneAsset : function(in_guid, in_dataType, in_name, in_cb){
+    var randName = 'xxxxxxxxxx'.replace(/x/g,function(){return Math.floor(Math.random()*16).toString(16)});
+    var assetName = in_name + ':' randName;
+    in_cb = in_cb || function(e){console.log("Loaded :" + e)};
+    if(in_cb){
+      lapi._cbmap[assetName] = in_cb;
+    }
+    lapi._loadAssets([{name : assetName, datatype : in_dataType, version_guid : in_guid}]);
+  },
+
   /*
    * Load a 2D asset dynamically into the scene. 
    * @in_guid {String} The guid of the asset we want to load
@@ -1167,7 +1194,7 @@ lapi.Scene.prototype = {
    * @in_name {String} name of the asset. Can be user-defined.
    * @in_cb {Function} optional callback that expects the SceneObject of the asset just added.
    */
-  addAsset2D : function(in_guid, in_dataType, in_name, in_cb){
+  addImage : function(in_guid, in_dataType, in_name, in_cb){
     var scn = lapi.getActiveScene();
     var obj = scn.getObjectByGuid(in_guid);
     if(obj){
