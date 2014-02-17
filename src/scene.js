@@ -115,7 +115,7 @@ lapi.Scene.prototype = {
    */
   addSceneAsset : function(in_guid, in_dataType, in_name, in_cb){
     var randName = 'xxxxxxxxxx'.replace(/x/g,function(){return Math.floor(Math.random()*16).toString(16)});
-    var assetName = in_name + ':' randName;
+    var assetName = in_name + ':' + randName;
     in_cb = in_cb || function(e){console.log("Loaded :" + e)};
     if(in_cb){
       lapi._cbmap[assetName] = in_cb;
