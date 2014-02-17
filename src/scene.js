@@ -139,7 +139,7 @@ lapi.Scene.prototype = {
     var self = this;
     lapi._embedRPC("var mat = ACTIVEAPP.AddEngineMaterial({minortype : '"
     + in_materialType + "'});"
-    + "mat.name;",function(in_response){
+    + "mat.guid;",function(in_response){
       if(in_cb){
         lapi._cbmap[in_response.data] = in_cb;
       }
@@ -156,7 +156,7 @@ lapi.Scene.prototype = {
     var self = this;
     lapi._embedRPC("var light = ACTIVEAPP.AddLight({minortype : '"
     + in_lightType + "'});"
-    + "light.name;",function(in_response){
+    + "light.guid;",function(in_response){
       if(in_cb){
         lapi._cbmap[in_response.data] = in_cb;
       }

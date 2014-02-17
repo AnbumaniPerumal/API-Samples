@@ -112,10 +112,15 @@
           scn.addObject(tuid,retval.data.guid, function(obj){
             lapi.onObjectAdded(obj);
             var name = obj.properties.getParameter('name').value;
+            var guid = obj.properties.getParameter('guid').value
             if(lapi._cbmap[name]){
               var callback = lapi._cbmap[name];
               callback(obj);
               delete lapi._cbmap[name];
+            } else if(lapi._cbmap[guid]){
+              var callback = lapi._cbmap[guid];
+              callback(obj);
+              delete lapi._cbmap[guid];
             }
           });
         }

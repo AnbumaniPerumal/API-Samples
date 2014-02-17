@@ -123,10 +123,15 @@ var lapi = {};
           scn.addObject(tuid,retval.data.guid, function(obj){
             lapi.onObjectAdded(obj);
             var name = obj.properties.getParameter('name').value;
+            var guid = obj.properties.getParameter('guid').value
             if(lapi._cbmap[name]){
               var callback = lapi._cbmap[name];
               callback(obj);
               delete lapi._cbmap[name];
+            } else if(lapi._cbmap[guid]){
+              var callback = lapi._cbmap[guid];
+              callback(obj);
+              delete lapi._cbmap[guid];
             }
           });
         }
@@ -1194,7 +1199,7 @@ lapi.Scene.prototype = {
     var self = this;
     lapi._embedRPC("var mat = ACTIVEAPP.AddEngineMaterial({minortype : '"
     + in_materialType + "'});"
-    + "mat.name;",function(in_response){
+    + "mat.guid;",function(in_response){
       if(in_cb){
         lapi._cbmap[in_response.data] = in_cb;
       }
@@ -1211,7 +1216,7 @@ lapi.Scene.prototype = {
     var self = this;
     lapi._embedRPC("var light = ACTIVEAPP.AddLight({minortype : '"
     + in_lightType + "'});"
-    + "light.name;",function(in_response){
+    + "light.guid;",function(in_response){
       if(in_cb){
         lapi._cbmap[in_response.data] = in_cb;
       }
