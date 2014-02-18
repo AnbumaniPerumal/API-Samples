@@ -65,7 +65,12 @@
         assetGUID = $(this).val();
         assetName = $(this).text();
       });
-      lapi.getActiveScene().addAssets([{name: assetName, datatype : ASSETS[assetGUID],version_guid: assetGUID}]);
+      var datatype  = ASSETS[assetGUID];
+      if(datatype === 14 || datatype === 21){
+        lapi.getActiveScene().addSceneAsset( assetGUID, datatype, assetName, function(e){console.log('HOLA'); console.log(e);}); 
+      } else {
+        lapi.getActiveScene().addImage( assetGUID, datatype, assetName, function(e){console.log('Howdy'); console.log(e);}); 
+      }
     }
 
     $( document ).ready(function() {
